@@ -12,7 +12,7 @@
 	<artifactId>urlshortener</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>urlshortener</name>
-	<description>Demo project for Spring Boot</description>
+	<description>URL shortener built with Spring Boot</description>
 	<properties>
 		<java.version>20</java.version>
 	</properties>
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-sync</artifactId>
-			<version>4.10.1</version>
+			<version>4.9.1</version>
     	</dependency>
 	</dependencies>
 
