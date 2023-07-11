@@ -1,6 +1,6 @@
 package com.emikobell.urlshortener;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UrlShortenerController {
     
     private static final String template = "http://localhost:8080/%s";
-    private final AtomicInteger counter = new AtomicInteger();
+    private final AtomicLong counter = new AtomicLong();
 
     @GetMapping("/urlshortener")
     public UrlShortener urlshortener(@RequestParam(value = "url", defaultValue = "test") String url) {
@@ -18,10 +18,9 @@ public class UrlShortenerController {
         // First, search db to make sure that the link doesn't already exist
         // If it does, return the shortened link already in db
         // If not, execute the following
-        int id = counter.incrementAndGet();
-        String shortUrl = Encode.encodeBase64(id);
+        long id = counter.incrementAndGet();
+        String shortUrl = Encode.encodeBase62(id);
         // Insert link into db
-        System.out.println(shortUrl);
         return new UrlShortener(id, String.format(template, shortUrl));
     }
     // Have URL decoder mapping as well
