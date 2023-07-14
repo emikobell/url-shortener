@@ -2,13 +2,15 @@ package com.emikobell.urlshortener;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.tomcat.util.http.parser.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.http.ResponseEntity;
 
 import com.emikobell.urlshortener.database.URLItem;
 import com.emikobell.urlshortener.database.URLRepository;
@@ -19,8 +21,9 @@ public class UrlShortenerController {
     private static final String template = "http://localhost:8080/%s";
     private final AtomicLong counter = new AtomicLong();
 
-    @PostMapping("/urlshortener")
-    public UrlShortener urlshortener(@RequestParam(value = "url", defaultValue = "test") String url) {
+
+    @PostMapping(path = "/urlshortener", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<UrlShortener> urlshortener(@RequestBody UrlShortenerRequest url) {
         // This should be a POST request
 
         // First, search db to make sure that the link doesn't already exist
@@ -29,12 +32,14 @@ public class UrlShortenerController {
         long id = counter.incrementAndGet();
         // If the server restarts, the db should also be purged or the id should get the next id
         String shortUrl = Encode.encodeBase62(id);
-        // Insert link into db
-        URLItem urlObj = new URLItem(id, url);
         // Change id to shortUrl for easier lookup
-        createShortURL(urlObj);
+        createShortURL(new URLItem(shortUrl, url.longURL));
 
-        return new UrlShortener(id, String.format(template, shortUrl));
+        UrlShortener urlObj = new UrlShortener(String.format(template, shortUrl), url.longURL);
+
+        System.out.println("Successfully created urlObj");
+
+        return ResponseEntity.ok().body(urlObj);
     }
     // Have URL decoder mapping as well
     // Mapping should be /<shortURL>
@@ -57,13 +62,13 @@ public class UrlShortenerController {
         System.out.println("URL Created.");
     }
 
-    String getLongURL(long id) {
-        URLItem URL = urlItemRepo.findURLByID(id);
+    String getLongURL(String shortUrl) {
+        URLItem URL = urlItemRepo.findURLByID(shortUrl);
 
         return URL.getLongUrl();
     }
 
-    long getShortURL(String longURL) {
+    String getShortURL(String longURL) {
         URLItem URL = urlItemRepo.findIDByURL(longURL);
 
         return URL.getId();

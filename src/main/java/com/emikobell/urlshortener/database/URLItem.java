@@ -6,22 +6,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("urlitems")
 public class URLItem {
     @Id
-    private long id;
+    private String shortUrl;
 
     private String longUrl;
     
-    public URLItem(long id, String longUrl) {
+    public URLItem(String shortUrl, String longUrl) {
         super();
-        this.id = id;
+        this.shortUrl = shortUrl;
         this.longUrl = longUrl;
     }
 
-    public long getId() {
-        return id;
+    public String getId() {
+        return shortUrl;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setId(String shortUrl) {
+        this.shortUrl = shortUrl;
     }
 
     public String getLongUrl(){
@@ -35,8 +35,8 @@ public class URLItem {
     @Override
     public String toString() {
         return String.format(
-            "URL: id = %s, longUrl = %s",
-            id,
+            "URL: shortUrl = %s, longUrl = %s",
+            shortUrl,
             longUrl
         );
     }

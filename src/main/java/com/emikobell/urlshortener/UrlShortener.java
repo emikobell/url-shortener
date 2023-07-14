@@ -1,3 +1,3 @@
 package com.emikobell.urlshortener;
 
-public record UrlShortener(long id, String shortUrl) { }
+public record UrlShortener(String shortUrl, String longUrl) { }
