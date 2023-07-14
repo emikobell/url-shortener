@@ -24,10 +24,10 @@ public class UrlShortenerController {
 
     @PostMapping(path = "/urlshortener", consumes = "application/json", produces = "application/json")
     public ResponseEntity<UrlShortener> urlshortener(@RequestBody UrlShortenerRequest url) {
-        // This should be a POST request
 
         // First, search db to make sure that the link doesn't already exist
         // If it does, return the shortened link already in db
+
         // If not, execute the following
         long id = counter.incrementAndGet();
         // If the server restarts, the db should also be purged or the id should get the next id
@@ -37,18 +37,15 @@ public class UrlShortenerController {
 
         UrlShortener urlObj = new UrlShortener(String.format(template, shortUrl), url.longURL);
 
-        System.out.println("Successfully created urlObj");
-
         return ResponseEntity.ok().body(urlObj);
     }
     // Have URL decoder mapping as well
     // Mapping should be /<shortURL>
     @GetMapping("/{id}")
     public RedirectView redirectToURL(@PathVariable String id) {
-        long urlKey = Encode.decodeBase62(id);
-        // Using id from path variable, access db to get the equivalent URL
-        // Then add the URL into the RedirectView constructor
-        return new RedirectView("newURL");
+        String longURL = getLongURL(id);
+        
+        return new RedirectView(longURL);
     }
 
     // MongoDB CRUD Operations
