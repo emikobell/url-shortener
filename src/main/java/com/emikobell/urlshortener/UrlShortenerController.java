@@ -2,7 +2,6 @@ package com.emikobell.urlshortener;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.tomcat.util.http.parser.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,30 +20,34 @@ public class UrlShortenerController {
     private static final String template = "http://localhost:8080/%s";
     private final AtomicLong counter = new AtomicLong();
 
-
     @PostMapping(path = "/urlshortener", consumes = "application/json", produces = "application/json")
     public ResponseEntity<UrlShortener> urlshortener(@RequestBody UrlShortenerRequest url) {
 
-        // First, search db to make sure that the link doesn't already exist
-        // If it does, return the shortened link already in db
+        String shortUrl;
 
-        // If not, execute the following
-        long id = counter.incrementAndGet();
-        // If the server restarts, the db should also be purged or the id should get the next id
-        String shortUrl = Encode.encodeBase62(id);
-        // Change id to shortUrl for easier lookup
-        createShortURL(new URLItem(shortUrl, url.longURL));
-
+        if (longURLExists(url.longURL)) {
+            shortUrl = getShortURL(url.longURL);
+        } else {
+            long id = counter.incrementAndGet();
+            shortUrl = Encode.encodeBase62(id);
+            // If the server restarts, the id should get the next highest id
+            if (shortURLExists(shortUrl)) {
+                id = getLongestID()+1;
+                shortUrl = Encode.encodeBase62(id);
+            }
+            createShortURL(new URLItem(shortUrl, id, url.longURL));
+        }
+        
         UrlShortener urlObj = new UrlShortener(String.format(template, shortUrl), url.longURL);
 
         return ResponseEntity.ok().body(urlObj);
     }
-    // Have URL decoder mapping as well
-    // Mapping should be /<shortURL>
+
+
     @GetMapping("/{id}")
     public RedirectView redirectToURL(@PathVariable String id) {
         String longURL = getLongURL(id);
-        
+
         return new RedirectView(longURL);
     }
 
@@ -54,9 +57,7 @@ public class UrlShortenerController {
 	URLRepository urlItemRepo;
 
     void createShortURL(URLItem urlObj) {
-        System.out.println("Creating URL...");
         urlItemRepo.save(urlObj);
-        System.out.println("URL Created.");
     }
 
     String getLongURL(String shortUrl) {
@@ -76,5 +77,17 @@ public class UrlShortenerController {
             "URL Short ID: " + urlObj.getId() +
             "\n URL Long Format: " + urlObj.getLongUrl()
         );
+    }
+
+    boolean shortURLExists(String shortUrl) {
+        return urlItemRepo.existsById(shortUrl);
+    }
+
+    boolean longURLExists(String longUrl) {
+        return urlItemRepo.existsByLongURL(longUrl);
+    }
+
+    long getLongestID() {
+        return urlItemRepo.findTop1ByOrderByUrlNumberDesc().getURLNumber();
     }
 }

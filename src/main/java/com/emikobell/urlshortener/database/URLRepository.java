@@ -10,5 +10,9 @@ public interface URLRepository extends MongoRepository<URLItem, String> {
 
     @Query("{'longUrl': ?0}")
     URLItem findIDByURL(String longUrl);
-    
+
+    @Query(value = "{'longUrl': ?0}", exists = true)
+    boolean existsByLongURL(String longUrl);
+
+    URLItem findTop1ByOrderByUrlNumberDesc();
 }
