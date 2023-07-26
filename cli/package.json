@@ -12,6 +12,7 @@
     "url-shortener": "./bin/index.js"
   },
   "dependencies": {
-    "yargs": "^17.7.2"
-  }
+    "inquirer": "^9.2.8"
+  },
+  "type": "module"
 }
