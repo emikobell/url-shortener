@@ -3,7 +3,15 @@
 import inquirer from 'inquirer';
 import { questionArray, createShortURL } from './inquirerUtils.js';
 
-console.log('Welcome to the URL Shortener app!! You can exit at any time using control + c.');
+console.log('\n\n\x1b[36m     ___    ___    _______      ___\x1b[0m'
+    +'\n\x1b[36m    /  /   /  /   /  __   \\    /  /\x1b[0m'
+    +'\n\x1b[36m   /  /   /  /   /  /__/  /   /  /\x1b[0m       ┏┓┓┏┏┓┳┓┏┳┓┏┓┳┓┏┓┳┓'
+    +'\n\x1b[36m  /  /___/  /   /       _/   /  /_____\x1b[0m   ┗┓┣┫┃┃┣┫ ┃ ┣ ┃┃┣ ┣┫'
+    + '\n\x1b[36m  \\________/   /__/\\____\\   /________/\x1b[0m   ┗┛┛┗┗┛┛┗ ┻ ┗┛┛┗┗┛┛┗'
+    + '\n\n' + ' '.repeat(42) + 'Made by Emiko Bell'
+    + '\n\nWelcome to the URL shortener!'
+    + '\nYou can press ctrl + c to quit at any time.\n'
+);
 
 inquirer
     .prompt(questionArray)
