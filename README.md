@@ -70,5 +70,5 @@ npm install -g .
 url-shortener
 ```
 
-### Future features:
+## Future features:
 - Docker containers
